@@ -4,8 +4,6 @@ from os import path
 
 from setuptools import setup, find_packages
 
-import theming
-
 
 BASE = path.abspath(path.dirname(__file__))
 
@@ -14,7 +12,7 @@ with open(path.join(BASE, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='django-template-theming',
-    version=theming.__version__,
+    version='0.8.2',
     url='https://github.com/wtayyeb/django-template-theming',
     author='w.Tayyeb',
     author_email='tayyeb@tsaze.com',
