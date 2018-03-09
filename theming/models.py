@@ -29,6 +29,7 @@ class Theme(object):
         self._metadata = {}
         self.metadata_ready = None
 
+    @classmethod
     def get_theming_root(self, theme_slug=None):
         root = settings.THEMING_ROOT if hasattr(settings, 'THEMING_ROOT') else 'themes'
         if theme_slug:
@@ -59,7 +60,7 @@ class Theme(object):
     def read_metadata(self):
         # filename = os.path.join(settings.THEMING_ROOT, self.slug, self._metadata_filename)
         filename = os.path.join(
-            self.get_theming_root(thememanager.get_current_theme().slug),
+            Theme.get_theming_root(thememanager.get_current_theme().slug),
             self.slug, self._metadata_filename
         )
         try:
@@ -101,7 +102,7 @@ class ThemeManager(object):
     def find_themes(self, force=False):
         if self._themes is None or force:
             self._themes = {}
-            root_list = Theme.get_theming_root(settings.THEMING_ROOT) # Theme.get_theming_root
+            root_list = Theme.get_theming_root(settings.THEMING_ROOT)
             # make root a list
             for root in root_list:
                 for dirname in os.listdir(root):
