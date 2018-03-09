@@ -29,8 +29,39 @@ class Theme(object):
         self._metadata = {}
         self.metadata_ready = None
 
+    def get_theming_root(self, theme_slug=None):
+        root = settings.THEMING_ROOT if hasattr(settings, 'THEMING_ROOT') else 'themes'
+        if theme_slug:
+            theme_app = settings.THEMING_APPS[theme_slug]
+            theme_app = __import__(theme_app)
+            root = os.path.join(theme_app.__file__).replace(
+                '__init__.py', settings.THEMING_ROOT
+            )
+        else:
+            if hasattr(settings, 'THEMING_APPS') and settings.THEMING_APPS is not None:
+                root_list = []
+                for theme, app in settings.THEMING_APPS.items():
+                    theme_app = __import__(app)
+
+                    # Get the THEMING_ROOT for a loaded theme app.
+                    # Theme apps should use the same construction i.e.
+                    # the THEMING_ROOT and folder layout should be standardised.
+                    root = os.path.join(theme_app.__file__).replace(
+                        '__init__.py', settings.THEMING_ROOT
+                    )
+                    root_list.append(root)
+                return root_list
+            return [root]
+        # used by read_metadata or by passing a theme_slug to return a
+        # a single root rather than a list.
+        return root
+
     def read_metadata(self):
-        filename = os.path.join(settings.THEMING_ROOT, self.slug, self._metadata_filename)
+        # filename = os.path.join(settings.THEMING_ROOT, self.slug, self._metadata_filename)
+        filename = os.path.join(
+            self.get_theming_root(thememanager.get_current_theme().slug),
+            self.slug, self._metadata_filename
+        )
         try:
             with open(filename, 'r') as f:
                 self._metadata = json.load(f)
@@ -70,10 +101,12 @@ class ThemeManager(object):
     def find_themes(self, force=False):
         if self._themes is None or force:
             self._themes = {}
-            root = settings.THEMING_ROOT
-            for dirname in os.listdir(root):
-                if not dirname.startswith('~'):
-                    self._themes[dirname] = Theme(dirname)
+            root_list = Theme.get_theming_root(settings.THEMING_ROOT) # Theme.get_theming_root
+            # make root a list
+            for root in root_list:
+                for dirname in os.listdir(root):
+                    if not dirname.startswith('~'):
+                        self._themes[dirname] = Theme(dirname)
         return self._themes
 
     def get_themes_choice(self):
@@ -88,10 +121,13 @@ class ThemeManager(object):
         if sitetheme:
             theme = sitetheme.theme
         else:
-            theme = self.get_theme(settings.THEMING_DEFAULT_THEME)
+            if not hasattr(settings, 'THEMING_DEFAULT_THEME'):
+                theme = self.get_theme('default')
+            else:
+                theme = self.get_theme(settings.THEMING_DEFAULT_THEME)
         return theme
 
-    def get_theme(self, theme_slug):
+    def get_theme(self, theme_slug='default'):
         self.find_themes()
         return self._themes[theme_slug]
 
