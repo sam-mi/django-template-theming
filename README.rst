@@ -46,10 +46,26 @@ It should create a folder ``themes`` at the project with the following structure
             |   | -- images/
             | -- templatefiles and folders
 
+
+Installable Themes
+
+To install a theme add it to ``INSTALLED_APPS``, then define ``THEMING_APPS`` dict with the theme slug as
+the key and the app label as the value e.g. ::
+
+    THEMING_ROOT = 'themes'
+    THEMING_APPS = {
+        'default': 'my_default_theme_app', # could be the project app or an installed theme.
+        'mytheme': 'my_theme',
+        'slug': 'app_label', # example format
+    }
+
+
+
+
 Contributing
 ============
 
-Development of **django-template-theming** happens at github and any idea and contribution is wellcome.  
+Development of **django-template-theming** happens at github and any idea and contribution is welcome.
 https://github.com/wtayyeb/django-template-theming
 
 Credits

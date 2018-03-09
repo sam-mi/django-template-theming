@@ -40,20 +40,24 @@ class App(AppConfig):
 
     def patch_settings_staticfiles_dirs(self):
         staticfiles_dirs = []
-        for theme_slug in os.listdir(settings.THEMING_ROOT):
-            if theme_slug.startswith('~'):
-                continue
+        from .models import Theme
+        root_list = Theme.get_theming_root(settings.THEMING_ROOT)  # Theme.get_theming_root
+        # make root a list
+        for root in root_list:
+            for theme_slug in os.listdir(root):
+                if theme_slug.startswith('~'):
+                    continue
 
-            real_path = os.path.join(settings.THEMING_ROOT, theme_slug, 'static').replace('\\', '/')
-            if os.path.isdir(real_path):
-                # here we need its path under static so using THEMING_URL
-                key = os.path.join(settings.THEMING_URL, theme_slug).replace('\\', '/')
-                row = (key, real_path)
-                if os.name == 'nt':  # fix for windows
-                    row = [r.replace('/', '\\') for r in row]
-                staticfiles_dirs.append(row)
-            else:
-                logger.debug('theme `%s` not found.' % theme_slug)
+                real_path = os.path.join(settings.THEMING_ROOT, theme_slug, 'static').replace('\\', '/')
+                if os.path.isdir(real_path):
+                    # here we need its path under static so using THEMING_URL
+                    key = os.path.join(settings.THEMING_URL, theme_slug).replace('\\', '/')
+                    row = (key, real_path)
+                    if os.name == 'nt':  # fix for windows
+                        row = [r.replace('/', '\\') for r in row]
+                    staticfiles_dirs.append(row)
+                else:
+                    logger.debug('theme `%s` not found.' % theme_slug)
 
         PRE_STATICFILES_DIRS = getattr(settings, 'PRE_STATICFILES_DIRS', None)
         if PRE_STATICFILES_DIRS is None:

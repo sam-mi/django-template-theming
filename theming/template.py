@@ -37,7 +37,7 @@ class Loader(BaseLoader):
         theme = thememanager.get_current_theme()
 
         if not template_dirs:
-            template_dirs = [safe_join(settings.THEMING_ROOT, theme.slug), ]
+            template_dirs = [safe_join(theme.get_theming_root(theme.slug), theme.slug), ]
 
         for template_dir in template_dirs:
             try:
