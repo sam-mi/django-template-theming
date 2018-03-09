@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 
 class App(AppConfig):
     name = 'theming'
+    label = 'template_theming'
+    verbose_name = "Template Theming"
 
     class Defaults:
         THEMING_DEFAULT_THEME = 'default'
