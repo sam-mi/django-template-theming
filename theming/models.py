@@ -138,7 +138,7 @@ thememanager = ThemeManager()
 
 @python_2_unicode_compatible
 class SiteTheme(models.Model):
-    site = models.OneToOneField(Site)
+    site = models.OneToOneField(Site, on_delete=models.CASCADE)
     theme_slug = models.CharField(max_length=100, choices=thememanager.get_themes_choice())
     site_title = models.CharField(max_length=255, default='', blank=True)
     site_description = models.CharField(max_length=255, default='', blank=True)

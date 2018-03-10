@@ -5,12 +5,11 @@
 '''
 
 from django.contrib.sites.models import Site, SITE_CACHE
-from django.utils.deprecation import MiddlewareMixin
 
 from .threadlocals import set_thread_variable
 
 
-class ThemingMiddleware(MiddlewareMixin):
+class ThemingMiddleware(object):
     ''' Middleware that puts the request object in thread local storage.
 
         add this middleware to MIDDLEWARE_CLASSES to make theming work.
@@ -21,6 +20,18 @@ class ThemingMiddleware(MiddlewareMixin):
         )
 
     '''
+    def __init__(self, get_response=None):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = None
+        if hasattr(self, 'process_request'):
+            response = self.process_request(request)
+        if not response:
+            response = self.get_response(request)
+        if hasattr(self, 'process_response'):
+            response = self.process_response(request, response)
+        return response
 
     def process_request(self, request):
         try:

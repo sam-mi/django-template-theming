@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('theme_slug', models.CharField(max_length=100, choices=thememanager.get_themes_choice())),
-                ('site', models.OneToOneField(to='sites.Site')),
+                ('site', models.OneToOneField(to='sites.Site',on_delete=models.CASCADE)),
             ],
         ),
     ]
