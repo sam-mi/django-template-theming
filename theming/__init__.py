@@ -43,7 +43,7 @@ class App(AppConfig):
     def patch_settings_staticfiles_dirs(self):
         staticfiles_dirs = []
         from .models import Theme
-        root_list = Theme.get_theming_root(settings.THEMING_ROOT)  # Theme.get_theming_root
+        root_list = Theme.get_theming_root()
         # make root a list
         for root in root_list:
             for theme_slug in os.listdir(root):
