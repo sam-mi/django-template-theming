@@ -33,11 +33,13 @@ class Theme(object):
     def get_theming_root(cls, theme_slug=None):
         root = settings.THEMING_ROOT if hasattr(settings, 'THEMING_ROOT') else 'themes'
         if theme_slug:
-            theme_app = settings.THEMING_APPS[theme_slug]
-            theme_app = __import__(theme_app)
-            root = os.path.join(theme_app.__file__).replace(
-                '__init__.py', settings.THEMING_ROOT
-            )
+            if hasattr(settings, 'THEMING_APPS') and settings.THEMING_APPS is not None:
+                theme_app = settings.THEMING_APPS[theme_slug] if \
+                    hasattr(settings, 'THEMING_APPS') else 'themes'
+                theme_app = __import__(theme_app)
+                root = os.path.join(theme_app.__file__).replace(
+                    '__init__.py', settings.THEMING_ROOT
+                )
         else:
             if hasattr(settings, 'THEMING_APPS') and settings.THEMING_APPS is not None:
                 root_list = []
