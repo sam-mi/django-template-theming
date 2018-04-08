@@ -7,6 +7,7 @@
 import io
 
 from django.conf import settings
+from django.template import Origin
 from django.template import TemplateDoesNotExist
 from django.templatetags.static import static
 from django.utils._os import safe_join
@@ -28,6 +29,13 @@ except ImportError:
 class Loader(BaseLoader):
     is_usable = True
 
+    def get_contents(self, origin):
+        try:
+            with open(origin.name, encoding=self.engine.file_charset) as fp:
+                return fp.read()
+        except FileNotFoundError:
+            raise TemplateDoesNotExist(origin)
+
     def get_template_sources(self, template_name, template_dirs=None):
         """
         Returns the absolute paths to "template_name", when appended to each
@@ -40,13 +48,20 @@ class Loader(BaseLoader):
             from .models import Theme
             template_dirs = [safe_join(Theme.get_theming_root(theme.slug), theme.slug), ]
 
+
         for template_dir in template_dirs:
             try:
-                yield safe_join(template_dir, template_name)
+                name = safe_join(template_dir, template_name)
             except SuspiciousFileOperation:
                 # The joined path was located outside of this template_dir
                 # (it might be inside another one, so this isn't fatal).
-                pass
+                continue
+
+            yield Origin(
+                name=name,
+                template_name=template_name,
+                loader=self,
+            )
 
     def load_template_source(self, template_name, template_dirs=None):
         tried = []
