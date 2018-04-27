@@ -5,7 +5,7 @@ Created on Nov 22, 2016
 @author: Wasim
 """
 import os
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from compressor.management.commands.compress import Command as CompressorCommand
 from django.conf import settings
