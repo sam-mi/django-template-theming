@@ -13,7 +13,10 @@ from django.contrib.sites.models import Site, SITE_CACHE
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 
-from .threadlocals import get_thread_variable
+try:
+    from django_common.theadlocal import get_thread_variable
+except ImportError:
+    from .threadlocals import get_thread_variable
 
 logger = logging.getLogger(__name__)
 

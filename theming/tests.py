@@ -12,9 +12,12 @@ from django.test.client import RequestFactory
 from .middleware import ThemingMiddleware
 from .models import ThemeManager
 from .template import Loader
-from .threadlocals import get_thread_variable
 from .views import redirect_to_theme_fav_icon
 
+try:
+    from django_common.theadlocal import get_thread_variable
+except ImportError:
+    from .threadlocals import get_thread_variable
 
 try:
     from django.template.engine import Engine

@@ -16,3 +16,5 @@ def set_thread_variable(key, val):
 
 def get_thread_variable(key, default=None):
 	return getattr(_threadlocals, key, default)
+
+

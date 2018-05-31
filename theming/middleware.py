@@ -6,7 +6,10 @@
 
 from django.contrib.sites.models import Site, SITE_CACHE
 
-from .threadlocals import set_thread_variable
+try:
+    from django_common.theadlocal import set_thread_variable
+except ImportError:
+    from .threadlocals import set_thread_variable
 
 
 class ThemingMiddleware(object):
