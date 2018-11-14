@@ -12,7 +12,7 @@ from django.template import TemplateDoesNotExist
 from django.templatetags.static import static
 from django.utils._os import safe_join
 
-from .models import thememanager
+from .models import thememanager, SiteTheme
 
 try:
     from django_common.theadlocal import get_thread_variable
@@ -92,6 +92,10 @@ def context_processor(request):
     theme_url += '/' if theme_url[-1] != '/' else ''
     theme_url = static(theme_url + theme.slug).replace('\\', '/')
     sitetheme = get_thread_variable('sitetheme')
+    if not sitetheme:
+        sitetheme = SiteTheme.objects.get(
+            theme_slug=settings.THEMING_DEFAULT_THEME
+        )
     return {
         'theme_url': theme_url,
         'sitetheme': theme,
