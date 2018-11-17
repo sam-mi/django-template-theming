@@ -121,7 +121,7 @@ class ThemeManager(object):
         return choices
 
     def get_current_theme(self):
-        sitetheme = get_thread_variable('sitetheme')
+        sitetheme = get_thread_variable(settings.THEMING_APP_NAME)
         if sitetheme:
             theme = sitetheme.theme
         else:

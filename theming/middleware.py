@@ -59,4 +59,4 @@ class ThemingMiddleware(object):
         except (AttributeError):
             sitetheme = SiteTheme.objects.first()
 
-        set_thread_variable('sitetheme', sitetheme)
+        set_thread_variable(settings.THEMING_APP_NAME, sitetheme)

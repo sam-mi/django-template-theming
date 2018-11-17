@@ -50,7 +50,7 @@ class Command(CompressorCommand):
                 pass
 
             ThemingMiddleware().process_request(request)
-            sitetheme = get_thread_variable('sitetheme')
+            sitetheme = get_thread_variable(settings.THEMING_APP_NAME)
             all_sitethemes = [sitetheme, ]
 
         for sitetheme in all_sitethemes:

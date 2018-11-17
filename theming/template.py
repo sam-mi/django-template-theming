@@ -91,7 +91,7 @@ def context_processor(request):
     theme_url = settings.THEMING_URL
     theme_url += '/' if theme_url[-1] != '/' else ''
     theme_url = static(theme_url + theme.slug).replace('\\', '/')
-    sitetheme = get_thread_variable('sitetheme')
+    sitetheme = get_thread_variable(settings.THEMING_APP_NAME)
     if not sitetheme:
         sitetheme = SiteTheme.objects.get(
             theme_slug=settings.THEMING_DEFAULT_THEME

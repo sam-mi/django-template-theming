@@ -52,7 +52,8 @@ class Test(TestCase):
         request = rf.get('/')
 
         mw.process_request(request)
-        sitetheme = get_thread_variable('sitetheme')
+        from django.conf import settings
+        sitetheme = get_thread_variable(settings.THEMING_APP_NAME)
         self.assertIsNone(sitetheme)
 
 
