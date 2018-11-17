@@ -3,14 +3,18 @@
 @author: wTayyeb  https://github.com/wtayyeb
 @license: MIT
 '''
-
+import logging
 from django.contrib.sites.models import Site, SITE_CACHE
+from django.conf import settings
+
+from theming.models import SiteTheme
 
 try:
     from django_common.theadlocal import set_thread_variable
 except ImportError:
     from .threadlocals import set_thread_variable
 
+logger = logging.getLogger(__name__)
 
 class ThemingMiddleware(object):
     ''' Middleware that puts the request object in thread local storage.
@@ -43,13 +47,16 @@ class ThemingMiddleware(object):
                 site = Site.objects.get(domain__iexact=host)
                 SITE_CACHE[host] = site
             site = SITE_CACHE[host]
-
         except (Site.DoesNotExist, KeyError):
-            site = None
+            logger.warning(
+                f"Site object not found by domain__iexact=host with host {host}"
+            )
+            site = Site.objects.filter(pk=settings.SITE_ID)
+            site = site[0] if site else None
 
         try:
             sitetheme = site.sitetheme
         except (AttributeError):
-            sitetheme = None
+            sitetheme = SiteTheme.objects.first()
 
         set_thread_variable('sitetheme', sitetheme)
