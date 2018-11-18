@@ -58,5 +58,5 @@ class Command(CompressorCommand):
                 print('# cannot find any sitetheme, fall back to pure compress command')
             else:
                 print('# Run compress command for Site:%s Theme:%s' % (sitetheme.site, sitetheme.theme))
-            set_thread_variable('sitetheme', sitetheme)
+            set_thread_variable(settings.THEMING_APP_NAME, sitetheme)
             super(Command, self).handle(*args, **options)
