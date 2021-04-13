@@ -11,14 +11,12 @@ import os
 from django.conf import settings
 from django.contrib.sites.models import Site, SITE_CACHE
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 
 from .threadlocals import get_thread_variable
 
 logger = logging.getLogger(__name__)
 
 
-@python_2_unicode_compatible
 class Theme(object):
     _metadata_filename = 'metadata.json'
 
@@ -136,7 +134,6 @@ class ThemeManager(object):
 thememanager = ThemeManager()
 
 
-@python_2_unicode_compatible
 class SiteTheme(models.Model):
     site = models.OneToOneField(Site, on_delete=models.CASCADE)
     theme_slug = models.CharField(max_length=100, choices=thememanager.get_themes_choice())
