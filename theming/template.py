@@ -7,26 +7,27 @@
 import io
 
 from django.conf import settings
-from django.template import TemplateDoesNotExist
+from django.template import TemplateDoesNotExist, Origin
 from django.templatetags.static import static
 from django.utils._os import safe_join
 
 from .models import thememanager
 from .threadlocals import get_thread_variable
 
-try:
-    from django.core.exceptions import SuspiciousFileOperation
-except ImportError:
-    from django.core.exceptions import SuspiciousOperation as SuspiciousFileOperation
-
-try:
-    from django.template.loaders.base import Loader as BaseLoader
-except ImportError:
-    from django.template.loader import BaseLoader
+from django.core.exceptions import SuspiciousFileOperation
+from django.template.loaders.filesystem import Loader as BaseLoader
 
 
 class Loader(BaseLoader):
     is_usable = True
+
+
+    def get_contents(self, origin):
+        try:
+            with open(origin.template_name, encoding=self.engine.file_charset) as fp:
+                return fp.read()
+        except FileNotFoundError:
+            raise TemplateDoesNotExist(origin)
 
     def get_template_sources(self, template_name, template_dirs=None):
         """
@@ -42,7 +43,12 @@ class Loader(BaseLoader):
 
         for template_dir in template_dirs:
             try:
-                yield safe_join(template_dir, template_name)
+                yield Origin(
+                    name=template_name,
+                    template_name=safe_join(template_dir, template_name),
+                    loader=self,
+                )
+
             except SuspiciousFileOperation:
                 # The joined path was located outside of this template_dir
                 # (it might be inside another one, so this isn't fatal).
