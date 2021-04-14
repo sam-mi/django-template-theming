@@ -5,7 +5,6 @@ Created on Nov 22, 2016
 @author: Wasim
 """
 import os
-# from urlparse import urlparse
 from urllib.parse import urlparse
 
 from compressor.management.commands.compress import Command as CompressorCommand
@@ -13,8 +12,10 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.test.client import RequestFactory
+from django.utils._os import safe_join
+
 from theming.middleware import ThemingMiddleware
-from theming.models import SiteTheme
+from theming.models import SiteTheme, thememanager
 from theming.threadlocals import set_thread_variable, get_thread_variable
 
 
@@ -32,9 +33,11 @@ class Command(CompressorCommand):
         if base_url is '':
             # compress all found themes, without touching database, as database is not ready normally.
             site = Site(domain='example.com')
+            from theming.models import Theme
+            template_dirs = thememanager.find_themes().keys()
             all_sitethemes = [SiteTheme(theme_slug=slug, site=site)
-                              for slug in os.listdir(settings.THEMING_ROOT)
-                              if os.path.isdir(os.path.join(settings.THEMING_ROOT, slug))]
+                              for slug in template_dirs #os.listdir(settings.THEMING_ROOT)
+                              if os.path.isdir(Theme.get_theming_root(slug))]
         else:
             factory = RequestFactory()
             self.request = request = factory.request()
