@@ -5,7 +5,8 @@ Created on Nov 22, 2016
 @author: Wasim
 """
 import os
-from urlparse import urlparse
+# from urlparse import urlparse
+from urllib.parse import urlparse
 
 from compressor.management.commands.compress import Command as CompressorCommand
 from django.conf import settings
@@ -46,7 +47,7 @@ class Command(CompressorCommand):
                 pass
 
             ThemingMiddleware().process_request(request)
-            sitetheme = get_thread_variable('sitetheme')
+            sitetheme = get_thread_variable(settings.THEMING_APP_NAME)
             all_sitethemes = [sitetheme, ]
 
         for sitetheme in all_sitethemes:
@@ -54,5 +55,5 @@ class Command(CompressorCommand):
                 print('# cannot find any sitetheme, fall back to pure compress command')
             else:
                 print('# Run compress command for Site:%s Theme:%s' % (sitetheme.site, sitetheme.theme))
-            set_thread_variable('sitetheme', sitetheme)
+            set_thread_variable(settings.THEMING_APP_NAME, sitetheme)
             super(Command, self).handle(*args, **options)
